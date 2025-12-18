@@ -42,28 +42,13 @@ public class OrderContextBuilder {
         // sort orders by createdAt DESC (latest first)
         orders.sort(Comparator.comparing(GiftcardOrder::getCreatedAt).reversed());
 
+        // pick ONLY the latest order
         GiftcardOrder latestOrder = orders.get(0);
 
-        List<Map<String, Object>> allVouchers = new ArrayList<>();
-
-        for (GiftcardOrder order : orders) {
-            Map<String, Object> singleOrderCtx = buildContextFromOrder(order);
-
-            Object vouchersObj = singleOrderCtx.get("vouchers");
-            if (vouchersObj instanceof List) {
-                allVouchers.addAll((List<Map<String, Object>>) vouchersObj);
-            }
-        }
-
-        // ---- build final context ----
-        Map<String, Object> ctx = buildContextFromOrder(latestOrder);
-
-        // override vouchers with ALL vouchers
-        ctx.put("vouchers", allVouchers);
-        ctx.put("voucher_count", allVouchers.size());
-
-        return ctx;
+        // build context ONLY for the latest order
+        return buildContextFromOrder(latestOrder);
     }
+
 
     /* =========================================================
        INTERNAL: reuse your existing logic
