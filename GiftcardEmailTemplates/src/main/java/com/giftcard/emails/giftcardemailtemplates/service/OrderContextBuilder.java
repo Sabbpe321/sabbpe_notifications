@@ -29,6 +29,7 @@ public class OrderContextBuilder {
     }
 
     /* =========================================================
+<<<<<<< HEAD
        ✅ NEW METHOD - clientId + orderId (RECOMMENDED)
        Only vouchers from THIS specific order
        ========================================================= */
@@ -53,6 +54,9 @@ public class OrderContextBuilder {
 
     /* =========================================================
        ✅ EXISTING METHOD - All orders for client (backward compatible)
+=======
+       ✅ NEW ENTRY POINT — frontend sends client_id
+>>>>>>> db3bdb263ef81a651385badee218c4626bd6a94b
        ========================================================= */
     public Map<String, Object> buildContextForClient(String clientId) {
 
@@ -65,6 +69,7 @@ public class OrderContextBuilder {
         // sort orders by createdAt DESC (latest first)
         orders.sort(Comparator.comparing(GiftcardOrder::getCreatedAt).reversed());
 
+<<<<<<< HEAD
         GiftcardOrder latestOrder = orders.get(0);
 
         List<Map<String, Object>> allVouchers = new ArrayList<>();
@@ -90,6 +95,18 @@ public class OrderContextBuilder {
 
     /* =========================================================
        INTERNAL: Build context from a single order
+=======
+        // pick ONLY the latest order
+        GiftcardOrder latestOrder = orders.get(0);
+
+        // build context ONLY for the latest order
+        return buildContextFromOrder(latestOrder);
+    }
+
+
+    /* =========================================================
+       INTERNAL: reuse your existing logic
+>>>>>>> db3bdb263ef81a651385badee218c4626bd6a94b
        ========================================================= */
     private Map<String, Object> buildContextFromOrder(GiftcardOrder order) {
 
