@@ -28,48 +28,29 @@ public class OrderContextBuilder {
         this.clientRepo = clientRepo;
     }
 
-    /* =========================================================
-<<<<<<< HEAD
-       ✅ NEW METHOD - clientId + orderId (RECOMMENDED)
-       Only vouchers from THIS specific order
-       ========================================================= */
     public Map<String, Object> buildContextForClientAndOrder(String clientId, String orderId) {
-
-        // Validate client exists
         ClientProfile client = clientRepo.findByClientId(clientId)
                 .orElseThrow(() -> new RuntimeException("Client not found: " + clientId));
 
-        // Get the specific order
         GiftcardOrder order = orderRepo.findById(orderId)
                 .orElseThrow(() -> new RuntimeException("Order not found: " + orderId));
 
-        // Verify order belongs to this client
         if (!order.getClientId().equals(clientId)) {
             throw new RuntimeException("Order " + orderId + " does not belong to client " + clientId);
         }
 
-        // Build context for THIS order only
         return buildContextFromOrder(order);
     }
 
-    /* =========================================================
-       ✅ EXISTING METHOD - All orders for client (backward compatible)
-=======
-       ✅ NEW ENTRY POINT — frontend sends client_id
->>>>>>> db3bdb263ef81a651385badee218c4626bd6a94b
-       ========================================================= */
     public Map<String, Object> buildContextForClient(String clientId) {
-
         List<GiftcardOrder> orders = orderRepo.findByClientId(clientId);
 
         if (orders == null || orders.isEmpty()) {
             throw new RuntimeException("No orders found for clientId: " + clientId);
         }
 
-        // sort orders by createdAt DESC (latest first)
         orders.sort(Comparator.comparing(GiftcardOrder::getCreatedAt).reversed());
 
-<<<<<<< HEAD
         GiftcardOrder latestOrder = orders.get(0);
 
         List<Map<String, Object>> allVouchers = new ArrayList<>();
@@ -83,33 +64,14 @@ public class OrderContextBuilder {
             }
         }
 
-        // ---- build final context ----
         Map<String, Object> ctx = buildContextFromOrder(latestOrder);
-
-        // override vouchers with ALL vouchers
         ctx.put("vouchers", allVouchers);
         ctx.put("voucher_count", allVouchers.size());
 
         return ctx;
     }
 
-    /* =========================================================
-       INTERNAL: Build context from a single order
-=======
-        // pick ONLY the latest order
-        GiftcardOrder latestOrder = orders.get(0);
-
-        // build context ONLY for the latest order
-        return buildContextFromOrder(latestOrder);
-    }
-
-
-    /* =========================================================
-       INTERNAL: reuse your existing logic
->>>>>>> db3bdb263ef81a651385badee218c4626bd6a94b
-       ========================================================= */
     private Map<String, Object> buildContextFromOrder(GiftcardOrder order) {
-
         String orderId = order.getOrderId();
 
         List<GiftcardOrderItem> items = itemRepo.findByOrderId(orderId);
@@ -178,8 +140,6 @@ public class OrderContextBuilder {
 
         return ctx;
     }
-
-    /* ===================== JSON HELPERS (UNCHANGED) ===================== */
 
     private Map<String,Object> buildVoucherFromExactJson(GiftcardOrderItem it, GiftcardCoupon c) {
         Map<String,Object> v = new HashMap<>();
